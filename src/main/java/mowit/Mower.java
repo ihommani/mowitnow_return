@@ -1,9 +1,9 @@
 package mowit;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.EnumBiMap;
 import com.google.common.collect.ImmutableMap;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
  * <p>
  * Class representing a mow.
  */
-@Builder
 @Getter
 @Slf4j
 public class Mower {
@@ -32,18 +31,24 @@ public class Mower {
 
     private Field field;
 
-    public void move(@NonNull Instruction instruction) {
-        log.debug("Received instruction {}", instruction);
-        computeNextPosition(instruction);
-        log.debug("New position [{},{},{}]", this.coordinates.getX(), this.coordinates.getY(), this.orientation);
+    private Mower() {
     }
 
-    private void computeNextPosition(Instruction instruction) {
+    private Mower(Coordinates coordinates, Orientation orientation, Field field) {
+        this.coordinates = coordinates;
+        this.orientation = orientation;
+        this.field = field;
+    }
+
+    public void move(@NonNull Instruction instruction) {
+        log.debug("Received instruction {}", instruction);
         switch (instruction) {
             case A:
-                Coordinates newCoordinates = computeNewCoordinates();
-                if (isAbleToMove(newCoordinates))
-                    this.coordinates = newCoordinates;
+                Coordinates nextCoordinates = computeNextCoordinates();
+                if (isAbleToMoveTo(nextCoordinates))
+                    this.coordinates = nextCoordinates;
+                else
+                    log.debug("Cannot move to [{}]. Keeping the same coordinates", nextCoordinates);
                 break;
             case D:
             case G:
@@ -52,6 +57,7 @@ public class Mower {
             default:
                 log.warn("Unknown instruction [{}]. Passing to the next instruction.", instruction);
         }
+        log.debug("New position [{},{},{}]", this.coordinates.getX(), this.coordinates.getY(), this.orientation);
     }
 
     private Orientation computeNewOrientation(Instruction instruction) {
@@ -66,25 +72,63 @@ public class Mower {
         }
     }
 
-    private Coordinates computeNewCoordinates() {
+    private Coordinates computeNextCoordinates() {
+        Coordinates nextCoordinates = new Coordinates(this.coordinates.getX(), this.coordinates.getY());
         switch (this.orientation) {
             case N:
-                return this.coordinates.incrementY();
+                return nextCoordinates.incrementY();
             case E:
-                return this.coordinates.incrementX();
+                return nextCoordinates.incrementX();
             case W:
-                return this.coordinates.decrementX();
+                return nextCoordinates.decrementX();
             case S:
-                return this.coordinates.decrementY();
+                return nextCoordinates.decrementY();
             default:
-                return this.coordinates;
+                return nextCoordinates;
         }
     }
 
-    private boolean isAbleToMove(Coordinates coordinates) {
+    private boolean isAbleToMoveTo(Coordinates coordinates) {
         return coordinates.getX() >= 0 &&
                 coordinates.getY() >= 0 &&
                 coordinates.getX() <= field.getLength() &&
                 coordinates.getY() <= field.getHeight();
+    }
+
+    public static MowerBuilder builder() {
+        return new MowerBuilder();
+    }
+
+    public static class MowerBuilder {
+        private Coordinates coordinates;
+        private Orientation orientation;
+
+        private Field field;
+
+        public MowerBuilder setCoordinates(Coordinates coordinates) {
+            this.coordinates = coordinates;
+            return this;
+        }
+
+        public MowerBuilder setOrientation(Orientation orientation) {
+            this.orientation = orientation;
+            return this;
+        }
+
+        public MowerBuilder defineField(Field field) {
+            this.field = field;
+            return this;
+        }
+
+        public Mower build() {
+            Preconditions.checkState(field.getHeight() > 0 && field.getLength() > 0, "Field cannot have negative value");
+
+            Preconditions.checkState(coordinates.getX() >= 0 &&
+                    coordinates.getY() >= 0 &&
+                    coordinates.getX() <= field.getLength() &&
+                    coordinates.getY() <= field.getHeight(), "The mower is outside the field. Please provide other coordinates.");
+
+            return new Mower(coordinates, orientation, field);
+        }
     }
 }
