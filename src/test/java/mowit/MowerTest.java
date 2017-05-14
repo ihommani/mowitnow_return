@@ -1,6 +1,5 @@
 package mowit;
 
-import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.testng.annotations.Test;
 
@@ -13,7 +12,6 @@ import static mowit.Instruction.G;
 /**
  * Created on 13/05/17.<br/>
  */
-@Slf4j
 public class MowerTest {
 
 

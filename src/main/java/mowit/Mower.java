@@ -1,12 +1,12 @@
 package mowit;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.EnumBiMap;
+import com.google.common.collect.ImmutableMap;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created on 13/05/17.<br/>
@@ -18,8 +18,14 @@ import java.util.List;
 @Slf4j
 public class Mower {
 
-    private static final List<Orientation> orientationLeft = Arrays.asList(Orientation.N, Orientation.E, Orientation.W, Orientation.S);
-    private static final List<Orientation> orientationRight = Arrays.asList(Orientation.E, Orientation.S, Orientation.N, Orientation.W);
+    private static final BiMap<Orientation, Orientation> leftToRight = EnumBiMap.create(
+            ImmutableMap.<Orientation, Orientation>builder()
+                    .put(Orientation.N, Orientation.E)
+                    .put(Orientation.E, Orientation.S)
+                    .put(Orientation.W, Orientation.N)
+                    .put(Orientation.S, Orientation.W)
+                    .build()
+    );
 
     private Coordinates coordinates;
     private Orientation orientation;
@@ -51,9 +57,9 @@ public class Mower {
     private Orientation computeNewOrientation(Instruction instruction) {
         switch (instruction) {
             case D:
-                return orientationRight.get(orientationLeft.indexOf(this.orientation));
+                return leftToRight.get(this.orientation);
             case G:
-                return orientationLeft.get(orientationRight.indexOf(this.orientation));
+                return leftToRight.inverse().get(this.orientation);
             default:
                 log.warn("{} is not an instruction to change orientation. Ignoring it.", instruction);
                 return this.orientation;
@@ -81,6 +87,4 @@ public class Mower {
                 coordinates.getX() <= field.getLength() &&
                 coordinates.getY() <= field.getHeight();
     }
-
-
 }
