@@ -1,4 +1,4 @@
-package mowit;
+package mowit.mower;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Created on 13/05/17.<br/>
  * <p>
- * Class representing a mow.
+ * Class representing a mower.
  */
 @Getter
 @Slf4j
@@ -121,6 +121,11 @@ public class Mower {
         }
 
         public Mower build() {
+
+            Preconditions.checkNotNull(field, "The mower can't mows no field");
+            Preconditions.checkNotNull(coordinates, "The mower should start at a position in the field.");
+            Preconditions.checkNotNull(orientation, "The mower should have an initial orientation.");
+
             Preconditions.checkState(field.getHeight() > 0 && field.getLength() > 0, "Field cannot have negative value");
 
             Preconditions.checkState(coordinates.getX() >= 0 &&

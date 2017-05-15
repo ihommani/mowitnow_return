@@ -1,5 +1,10 @@
 package mowit;
 
+import mowit.mower.Coordinates;
+import mowit.mower.Field;
+import mowit.mower.Instruction;
+import mowit.mower.Mower;
+import mowit.mower.Orientation;
 import org.assertj.core.api.Assertions;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -7,14 +12,53 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static mowit.Instruction.A;
-import static mowit.Instruction.D;
-import static mowit.Instruction.G;
+import static mowit.mower.Instruction.A;
+import static mowit.mower.Instruction.D;
+import static mowit.mower.Instruction.G;
 
 /**
  * Created on 13/05/17.<br/>
  */
 public class MowerTest {
+
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "The mower can't mows no field")
+    public void should_throw_NPE_when_no_field_is_defined() {
+        // given
+        // when
+        // then
+        Mower.builder()
+                .setOrientation(Orientation.N)
+                .setCoordinates(new Coordinates(2, 4))
+                .build();
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "The mower should start at a position in the field.")
+    public void should_throw_NPE_when_no_coordinate_is_defined() {
+
+        // given
+        // when
+        // then
+        Mower.builder()
+                .defineField(new Field(3,4))
+                .setOrientation(Orientation.N)
+                .build();
+
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "The mower should have an initial orientation.")
+    public void should_throw_NPE_when_no_orientation_is_defined() {
+
+        // given
+        // when
+        // then
+        Mower.builder()
+                .defineField(new Field(3,4))
+                .setCoordinates(new Coordinates(2, 4))
+                .build();
+    }
+
+
 
     @DataProvider(name = "invalidInitPosition")
     public static Object[][] unvalideInitPosition() {
@@ -29,7 +73,7 @@ public class MowerTest {
     @Test(dataProvider = "invalidInitPosition",
             expectedExceptions = IllegalStateException.class,
             expectedExceptionsMessageRegExp = "The mower is outside the field. Please provide other coordinates.")
-    public void should_throw_illegal_state_exception_when_mower_is_outside_the_field(Field fieldToMow, Coordinates initialMowCoordinate) {
+    public void should_throw_illegal_state_exception_when_mower_begins_from_outside_the_field(Field fieldToMow, Coordinates initialMowCoordinate) {
         // given
         // when
         // then

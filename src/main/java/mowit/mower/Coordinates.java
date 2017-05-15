@@ -1,4 +1,4 @@
-package mowit;
+package mowit.mower;
 
 import lombok.Data;
 import lombok.Getter;
