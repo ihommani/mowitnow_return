@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
+import mowit.cli.Arguments;
 import mowit.mower.Field;
 import mowit.mower.Instruction;
 import mowit.mower.Mower;

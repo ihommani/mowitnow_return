@@ -1,4 +1,4 @@
-package mowit;
+package mowit.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.PathConverter;

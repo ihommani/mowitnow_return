@@ -2,6 +2,7 @@ package mowit;
 
 import com.beust.jcommander.ParameterException;
 import com.google.common.io.Resources;
+import mowit.cli.InstructionFileValidator;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 

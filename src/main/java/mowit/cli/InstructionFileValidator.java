@@ -1,4 +1,4 @@
-package mowit;
+package mowit.cli;
 
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.ParameterException;
